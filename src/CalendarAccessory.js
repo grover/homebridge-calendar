@@ -74,16 +74,21 @@ class CalendarAccessory {
 
     let subtype = 0;
 
+    const sensors = [];
+
     this._sensor = new Service.ContactSensor(this.name, subtype++);
     this._sensor.isPrimaryService = true;
+
+    sensors.push(this._sensor);
 
     this._namedSensors = [];
     for (const sw of this.config.sensors) {
       const namedSensor = new Service.ContactSensor(sw, subtype++);
       this._namedSensors[sw] = namedSensor;
+      sensors.push(namedSensor);
     }
 
-    return [this._sensor].concat(this._namedSensors);
+    return sensors;
   }
 
   identify(callback) {
