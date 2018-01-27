@@ -1,0 +1,5 @@
+node_modules/
+.vscode/
+tests/config.json
+tests/accessories/
+tests/persist/
