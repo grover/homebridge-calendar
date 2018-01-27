@@ -44,7 +44,7 @@ const CalendarPlatform = class {
       }
 
       cal.version = version;
-      cal.pollingInterval = cal.pollingInterval || 300000;
+      cal.pollingInterval = cal.pollingInterval || 15;
 
       const accessory = new CalendarAccessory(this.api, this.log, cal);
       _accessories.push(accessory);

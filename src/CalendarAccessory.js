@@ -92,7 +92,7 @@ class CalendarAccessory {
   }
 
   _scheduleRefresh() {
-    setTimeout(() => this._loadCalendar(false), this.config.pollingInterval);
+    setTimeout(() => this._loadCalendar(false), this.config.pollingInterval * 60000);
   }
 
   _loadCalendar(initialLoad) {

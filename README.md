@@ -30,7 +30,7 @@ After [Homebridge](https://github.com/nfarina/homebridge) has been installed:
       "devices": [
         {
           "name": "Cal 1",
-          "pollingInterval": 60000,
+          "pollingInterval": 5,
           "switches": [
             "Switch 1",
             "Switch 2"
