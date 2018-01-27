@@ -32,9 +32,9 @@ After [Homebridge](https://github.com/nfarina/homebridge) has been installed:
           "name": "Cal 1",
           "url": "webcal://",
           "pollingInterval": 5,
-          "switches": [
-            "Switch 1",
-            "Switch 2"
+          "sensors": [
+            "Sensor 1",
+            "Sensor 2"
           ]
         }
       ]
@@ -48,15 +48,23 @@ After [Homebridge](https://github.com/nfarina/homebridge) has been installed:
 | name | A unique name for the calendar. Will be used as the accessory name and default switch for any calendar events. |
 | url | The address of the calender. Can be a `webcal://`, a `http://` or an `https://` URL. |
 | pollingInterval | The polling interval the plugin uses to retrieve calendar updates in minutes. If not set, the plugin will update the calendar ones in 15 minutes. |
-| switches | An array of event summaries to create special switches for. |
+| sensors | An array of event summaries to create special sensors for. |
 
-The above example creates the plugin with three stateless switches:
+The above example creates the plugin with three contact sensors:
 
 - Cal 1
-- Switch 1
-- Switch 2
+- Sensor 1
+- Sensor 2
 
-`Cal 1` will be triggered any time any event starts in the calendar. `Switch 1` and `Switch 2` will only trigger if the event name starts with `Switch 1` or `Switch 2` respectively.
+`Cal 1` will be opened any time any event starts in the calendar. `Sensor 1` and `Sensor 2` will only open if the event name starts with `Sensor 1` or `Sensor 2` respectively.
+
+Calendar events may overlap, may be full day, recurring or single occurance events and can even span multiple days.
+
+### Sharing an iCloud calender
+
+To give the plugin access to a calender it is advised to create a seperate (iCloud) calender and share it publically. Public sharing provides a read-only view on the calender and a URL that can be used by the plugin to access the calender. No one else can modify a publically shared calender in this way.
+
+[Here's good instructions](http://www.idownloadblog.com/2016/02/14/how-to-share-calendars-iphone-ipad-mac-iclod/) on how to do this. Refer to the public sharing section there.
 
 ## Contributing
 
