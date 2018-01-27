@@ -27,7 +27,7 @@ After [Homebridge](https://github.com/nfarina/homebridge) has been installed:
   "platforms": [
     {
       "platform": "Calendar",
-      "devices": [
+      "calendars": [
         {
           "name": "Cal 1",
           "url": "webcal://",
