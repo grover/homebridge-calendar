@@ -30,6 +30,7 @@ After [Homebridge](https://github.com/nfarina/homebridge) has been installed:
       "devices": [
         {
           "name": "Cal 1",
+          "url": "webcal://",
           "pollingInterval": 5,
           "switches": [
             "Switch 1",
@@ -45,6 +46,7 @@ After [Homebridge](https://github.com/nfarina/homebridge) has been installed:
 | Attributes | Usage |
 |------------|-------|
 | name | A unique name for the calendar. Will be used as the accessory name and default switch for any calendar events. |
+| url | The address of the calender. Can be a `webcal://`, a `http://` or an `https://` URL. |
 | pollingInterval | The polling interval the plugin uses to retrieve calendar updates in minutes. If not set, the plugin will update the calendar ones in 15 minutes. |
 | switches | An array of event summaries to create special switches for. |
 
