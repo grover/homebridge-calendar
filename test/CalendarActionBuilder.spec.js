@@ -5,11 +5,11 @@ const clone = require('clone');
 const moment = require('moment');
 const RRule = require('rrule').RRule;
 
-const CalendarProcessor = require('./../src/CalendarProcessor');
+const CalendarActionBuilder = require('./../src/CalendarActionBuilder');
 
-describe('CalendarProcessor', () => {
+describe('CalendarActionBuilder', () => {
 
-  const processor = new CalendarProcessor();
+  const builder = new CalendarActionBuilder();
 
   const oneEvent = {
     'foo': {
@@ -65,7 +65,7 @@ describe('CalendarProcessor', () => {
       }
     ];
 
-    const actions = processor._generateNonRecurringEvents(oneEvent);
+    const actions = builder._generateNonRecurringEvents(oneEvent);
     assert.equal(actions.length, 2, 'Not enough actions created.');
     assert.deepEqual(actions, expectedActions);
   });
@@ -97,14 +97,14 @@ describe('CalendarProcessor', () => {
       }
     ];
 
-    const actions = processor._generateNonRecurringEvents(twoEvents);
+    const actions = builder._generateNonRecurringEvents(twoEvents);
     assert.equal(actions.length, 4, 'Not enough actions created.');
     assert.deepEqual(actions, expectedActions);
   });
 
 
   it('Builds a start and end action for a single recurring event, occurring daily', () => {
-    assert.isEmpty(processor._generateNonRecurringEvents(recurringEvent));
+    assert.isEmpty(builder._generateNonRecurringEvents(recurringEvent));
   });
 
   it('Builds a start and end action for a single recurring event, occurring daily', () => {
@@ -140,7 +140,7 @@ describe('CalendarProcessor', () => {
       expectedActions.push(start, end);
     }
 
-    const actions = processor._generateRecurringEvents(recurringEvent, moment('20180130'));
+    const actions = builder._generateRecurringEvents(recurringEvent, moment('20180130'));
     assert.equal(actions.length, 14);
     assert.deepEqual(actions, expectedActions);
   });
@@ -165,7 +165,7 @@ describe('CalendarProcessor', () => {
       unsortedActions[0]
     ];
 
-    const result = processor._sortEventsByDate(unsortedActions);
+    const result = builder._sortEventsByDate(unsortedActions);
     assert.deepEqual(result, expectedResult);
   });
 
@@ -191,7 +191,7 @@ describe('CalendarProcessor', () => {
 
     const now = moment('20180130').valueOf();
 
-    const result = processor._filterExpiredEvents(actions, now);
+    const result = builder._filterExpiredEvents(actions, now);
     assert.deepEqual(result, expectedResult);
   });
 });

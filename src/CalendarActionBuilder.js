@@ -2,7 +2,7 @@
 
 const moment = require('moment');
 
-class CalendarProcessor {
+class CalendarActionBuilder {
   generateActions(cal) {
     let allEvents = [].concat(
       this._generateNonRecurringEvents(cal),
@@ -85,4 +85,4 @@ class CalendarProcessor {
   }
 };
 
-module.exports = CalendarProcessor;
+module.exports = CalendarActionBuilder;
