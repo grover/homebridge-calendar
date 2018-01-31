@@ -4,7 +4,8 @@
   "description": "A calendar plugin for homebridge (https://github.com/nfarina/homebridge), which allows flexible scheduling of triggers using any iCal calendar.",
   "main": "src/index.js",
   "scripts": {
-    "release": "npm-github-release"
+    "release": "npm-github-release",
+    "test": "./node_modules/.bin/mocha --reporter spec --recursive test/**/*.spec.js"
   },
   "keywords": [
     "homebridge",
@@ -21,9 +22,12 @@
     "homebridge": ">=0.4.36"
   },
   "devDependencies": {
+    "chai": "^4.1.2",
+    "mocha": "^5.0.0",
     "npm-github-release": "^0.9.0"
   },
   "dependencies": {
+    "clone": "^2.1.1",
     "moment": "^2.20.1",
     "node-ical": "^0.5.4",
     "request": "^2.83.0"
