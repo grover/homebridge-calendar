@@ -4,8 +4,8 @@ class CalendarSensor {
 
   constructor(log, name, sensor, characteristic, onValue, offValue) {
     this.log = log;
-    this._name = name;
-    this._sensor = sensor;
+    this.name = name;
+    this.sensor = sensor;
     this._characteristic = characteristic;
     this._onValue = onValue;
     this._offValue = offValue;
@@ -33,8 +33,8 @@ class CalendarSensor {
       value = this._onValue;
     }
 
-    this.log(`Setting calendar sensor '${this._name}' state to ${this._state > 0 ? 1 : 0}`);
-    this._sensor
+    this.log(`Setting calendar sensor '${this.name}' state to ${value}`);
+    this.sensor
       .getCharacteristic(this._characteristic)
       .updateValue(value);
   }
