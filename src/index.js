@@ -28,7 +28,7 @@ module.exports = (homebridge) => {
 const CalendarPlatform = class {
   constructor(log, config, api) {
     this.log = log;
-    this.log('CalendarPlatform Plugin Loaded');
+    this.log(`CalendarPlatform Plugin Loaded - version ${version}`);
     this.config = config;
     this.api = api;
   }
