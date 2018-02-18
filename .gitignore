@@ -3,3 +3,4 @@ node_modules/
 tests/config.json
 tests/accessories/
 tests/persist/
+coverage/

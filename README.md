@@ -4,6 +4,17 @@ A calendar plugin for [homebridge](https://github.com/nfarina/homebridge), which
 
 HomeKits own scheduling means are limited and in some instances not flexible enough for more advanced scheduling needs. This plugin integrates any iCal calendar (iCloud, Google Calendar, ...) into HomeKit and creates stateless switches for the events in the calendar using the scheduled event summary.
 
+## Status
+
+[![HitCount](http://hits.dwyl.io/grover/homebridge-calendar.svg)](https://github.com/grover/homebridge-calendar)
+[![Build Status](https://travis-ci.org/grover/homebridge-calendar.png?branch=master)](https://travis-ci.org/grover/homebridge-calendar)
+[![codecov.io](https://img.shields.io/codecov/c/github/grover/homebridge-calendar/master.svg?style=flat-square)](http://codecov.io/github/grover/homebridge-calendar?branch=master)
+[![Dependency Status](https://img.shields.io/david/grover/homebridge-calendar.svg?style=flat-square)](https://david-dm.org/grover/homebridge-calendar)
+[![devDependency Status](https://img.shields.io/david/dev/grover/homebridge-calendar.svg?style=flat-square)](https://david-dm.org/grover/homebridge-calendar#info=devDependencies)
+[![Node version](https://img.shields.io/node/v/homebridge-calendar.svg?style=flat)](http://nodejs.org/download/)
+[![Node version](https://img.shields.io/node/v/homebridge-calendar.svg?style=flat)](http://nodejs.org/download/)
+[![NPM Version](https://badge.fury.io/js/homebridge-calendar.svg?style=flat)](https://npmjs.org/package/homebridge-calendar)
+
 ## Supported calendars
 
 - iCloud Calendar
