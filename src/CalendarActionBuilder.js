@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 const moment = require('moment');
 
@@ -20,7 +20,7 @@ class CalendarActionBuilder {
     for (const key in cal) {
       if (cal.hasOwnProperty(key)) {
         const event = cal[key];
-        if (event.type === "VEVENT" && event.rrule === undefined) {
+        if (event.type === 'VEVENT' && event.rrule === undefined) {
           events.push({
             date: event.start,
             expires: event.end,
@@ -46,7 +46,7 @@ class CalendarActionBuilder {
     for (const key in cal) {
       if (cal.hasOwnProperty(key)) {
         const event = cal[key];
-        if (event.type === "VEVENT" && event.rrule !== undefined) {
+        if (event.type === 'VEVENT' && event.rrule !== undefined) {
           const duration = event.end - event.start;
           const rstart = moment.subtract(2 * duration, 'milliseconds').toDate();
           const rend = moment.add(7, 'days').toDate();
@@ -83,6 +83,6 @@ class CalendarActionBuilder {
     // Keep only events that expire right now or in the future
     return events.filter(event => event.expires.valueOf() >= now);
   }
-};
+}
 
 module.exports = CalendarActionBuilder;

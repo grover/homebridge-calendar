@@ -1,10 +1,4 @@
-"use strict";
-
-const version = require('../package.json').version;
-const inherits = require('util').inherits;
-const inspect = require('util').inspect;
-const ical = require('node-ical');
-const moment = require('moment');
+'use strict';
 
 const CalendarActionBuilder = require('./CalendarActionBuilder');
 const CalendarActionHandler = require('./CalendarActionHandler');

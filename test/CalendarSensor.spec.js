@@ -1,9 +1,6 @@
 'use strict';
 
 const assert = require('chai').assert;
-const clone = require('clone');
-const moment = require('moment');
-const RRule = require('rrule').RRule;
 
 const CalendarSensor = require('./../src/CalendarSensor');
 
@@ -27,7 +24,7 @@ describe('CalendarSensor', () => {
   });
 
   it('Should initialize the sensor to off', () => {
-    const sensor = new CalendarSensor(console.log, 'Test', service, characteristic, 1, 0);
+    new CalendarSensor(console.log, 'Test', service, characteristic, 1, 0);
     assert.equal(value, 0);
   });
 

@@ -1,5 +1,4 @@
-
-const util = require('util');
+'use strict';
 
 const version = require('../package.json').version;
 
@@ -23,7 +22,7 @@ module.exports = (homebridge) => {
   HOMEBRIDGE.UUIDGen = homebridge.hap.uuid;
 
   homebridge.registerPlatform(platformName, platformPrettyName, CalendarPlatform, true);
-}
+};
 
 const CalendarPlatform = class {
   constructor(log, config, api) {
@@ -52,4 +51,4 @@ const CalendarPlatform = class {
 
     callback(_accessories);
   }
-}
+};

@@ -1,8 +1,6 @@
 'use strict';
 
 const assert = require('chai').assert;
-const clone = require('clone');
-const moment = require('moment');
 const sinon = require('sinon');
 
 const CalendarActionHandler = require('./../src/CalendarActionHandler');
@@ -19,11 +17,11 @@ describe('CalendarActionHandler', () => {
 
   beforeEach(() => {
     calendarSensor = {
+      name: 'Calendar',
       on: sinon.spy(),
       off: sinon.spy(),
       pushState: sinon.spy(),
-      reset: sinon.spy(),
-      name: 'Calendar'
+      reset: sinon.spy()
     };
 
     testSensor = {
@@ -31,8 +29,7 @@ describe('CalendarActionHandler', () => {
       on: sinon.spy(),
       off: sinon.spy(),
       pushState: sinon.spy(),
-      reset: sinon.spy(),
-      name: 'Test'
+      reset: sinon.spy()
     };
 
     handler = new CalendarActionHandler(log, calendarSensor, [testSensor]);

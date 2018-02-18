@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 class CalendarActionHandler {
   constructor(log, calendarSensor, namedSensors) {

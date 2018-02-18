@@ -1,8 +1,6 @@
 'use strict';
 
 const assert = require('chai').assert;
-const clone = require('clone');
-const moment = require('moment');
 const sinon = require('sinon');
 
 const CalendarScheduleHandler = require('./../src/CalendarScheduleHandler');
