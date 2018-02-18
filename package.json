@@ -20,7 +20,7 @@
   "author": "Michael Fröhlich",
   "license": "MIT",
   "engines": {
-    "node": ">=8.9.3",
+    "node": ">=9.3.0",
     "homebridge": ">=0.4.36"
   },
   "devDependencies": {
