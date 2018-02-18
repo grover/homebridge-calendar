@@ -8,6 +8,7 @@ const moment = require('moment');
 
 const CalendarActionBuilder = require('./CalendarActionBuilder');
 const CalendarActionHandler = require('./CalendarActionHandler');
+const CalendarScheduleHandler = require('./CalendarScheduleHandler');
 const CalendarPoller = require('./CalendarPoller');
 const CalendarSensor = require('./CalendarSensor');
 
@@ -31,7 +32,7 @@ class CalendarAccessory {
 
     this._services = this.createServices();
 
-    this._calendarPoller = new CalendarPoller(this.log, this.config.url, this.config.pollingInterval * 60000);
+    this._calendarPoller = new CalendarPoller(this.log, this.name, this.config.url, this.config.pollingInterval * 60000);
     this._calendarPoller
       .on('error', this._onPollingError.bind(this))
       .on('data', this._onCalendar.bind(this))
@@ -40,7 +41,10 @@ class CalendarAccessory {
 
     this._actionBuilder = new CalendarActionBuilder();
 
-    this._actionHandler.start();
+    this._scheduleHandler = new CalendarScheduleHandler(this.log);
+    this._scheduleHandler
+      .on('event', this._scheduledEvent.bind(this));
+
     this._calendarPoller.start();
   }
 
@@ -90,7 +94,7 @@ class CalendarAccessory {
     const namedSensors = [];
     for (const sw of this.config.sensors) {
       const namedSensor = this._createCalendarSensor(sw, subtype++);
-      namedSensors[sw] = namedSensor;
+      namedSensors.push(namedSensor);
       sensors.push(namedSensor.sensor);
     }
 
@@ -133,8 +137,19 @@ class CalendarAccessory {
   }
 
   _onCalendar(data) {
-    const actions = this._actionBuilder.generateActions(data);
-    this._actionHandler.actionsUpdated(actions);
+    const now = new Date();
+
+    const actions = this._actionBuilder.generateActions(data, now);
+    this._actionHandler.actionsUpdated(actions, now);
+
+    const schedule = actions.map(action => action.date);
+    this._scheduleHandler.scheduleUpdated(schedule, now);
+
+    this._setReachable(true);
+  }
+
+  _scheduledEvent(now) {
+    this._actionHandler.execute(now);
   }
 }
 

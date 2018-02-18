@@ -10,30 +10,31 @@ class CalendarSensor {
     this._onValue = onValue;
     this._offValue = offValue;
 
-    this._state = 0;
+    this.reset();
+    this.pushState();
+  }
 
-    this._reflectState();
+  reset() {
+    this._state = 0;
   }
 
   on() {
     this._state++;
-    this._reflectState();
   }
 
   off() {
     if (this._state > 0) {
       this._state--;
-      this._reflectState();
     }
   }
 
-  _reflectState() {
+  pushState() {
     let value = this._offValue;
     if (this._state > 0) {
       value = this._onValue;
     }
 
-    this.log(`Setting calendar sensor '${this.name}' state to ${value}`);
+    this.log(`Pushing calendar sensor '${this.name}' state ${this._state} - value ${value}`);
     this.sensor
       .getCharacteristic(this._characteristic)
       .updateValue(value);

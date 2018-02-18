@@ -37,36 +37,60 @@ describe('CalendarSensor', () => {
 
     beforeEach(() => {
       sensor = new CalendarSensor(console.log, 'Test', service, characteristic, 1, 0);
+      value = undefined;
     });
 
-    it('Turning on should update the characteristic', () => {
+    it('Turning on should not update the characteristic', () => {
       sensor.on();
-      assert.equal(value, 1);
+      assert.isUndefined(value);
     });
 
-    it('Turning on twice should leave characteristic at 1', () => {
+    it('Turning on should increment the state', () => {
       sensor.on();
-      sensor.on();
-      assert.equal(value, 1);
+      assert.equal(sensor._state, 1);
     });
 
-    it('Turning on and off should reset characteristic to zero', () => {
+    it('Turning on twice should increment the state twice', () => {
+      sensor.on();
+      sensor.on();
+      assert.equal(sensor._state, 2);
+    });
+
+    it('Turning on and off should reset the state to zero', () => {
       sensor.on();
       sensor.off();
-      assert.equal(value, 0);
+      assert.equal(sensor._state, 0);
     });
 
-    it('Turning on, on and off should leave characteristic at 1', () => {
+    it('Turning on, on and off should keep the state at 1', () => {
       sensor.on();
       sensor.on();
       sensor.off();
-      assert.equal(value, 1);
+      assert.equal(sensor._state, 1);
     });
 
     it('Should not underflow on too many offs', () => {
       sensor.on();
       sensor.off();
       sensor.off();
+      assert.equal(sensor._state, 0);
+    });
+
+    it('Reset should set the state to zero', () => {
+      sensor.on();
+      sensor.reset();
+      assert.equal(sensor._state, 0);
+    });
+
+    it('pushState should update HomeKit to reflect the state value', () => {
+      sensor.on();
+      sensor.pushState();
+      assert.equal(value, 1);
+    });
+
+    it('pushState should update HomeKit to reflect the state value', () => {
+      sensor.off();
+      sensor.pushState();
       assert.equal(value, 0);
     });
   });

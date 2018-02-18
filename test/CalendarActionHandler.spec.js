@@ -13,49 +13,32 @@ describe('CalendarActionHandler', () => {
 
   const log = console.log;
   let calendarSensor;
-  let namedSensors;
-  let handler;
+  let testSensor;
 
-  let clock;
+  let handler;
 
   beforeEach(() => {
     calendarSensor = {
       on: sinon.spy(),
-      off: sinon.spy()
+      off: sinon.spy(),
+      pushState: sinon.spy(),
+      reset: sinon.spy(),
+      name: 'Calendar'
     };
 
-    namedSensors = [
-      {
-        name: 'Test',
-        on: sinon.spy(),
-        off: sinon.spy()
-      }
-    ];
+    testSensor = {
+      name: 'Test',
+      on: sinon.spy(),
+      off: sinon.spy(),
+      pushState: sinon.spy(),
+      reset: sinon.spy(),
+      name: 'Test'
+    };
 
-    clock = sinon.useFakeTimers({
-      now: now
-    });
-
-    handler = new CalendarActionHandler(log, calendarSensor, namedSensors);
+    handler = new CalendarActionHandler(log, calendarSensor, [testSensor]);
   });
 
   afterEach(() => {
-    clock.restore();
-  });
-
-  it('Should be created in stopped state', () => {
-    assert.isNotOk(handler._started);
-  });
-
-  it('Should set the started state', () => {
-    handler.start();
-    assert.isOk(handler._started);
-  });
-
-  it('Should reset the started state', () => {
-    handler.start();
-    handler.stop();
-    assert.isNotOk(handler._started);
   });
 
   it('Should store given actions', () => {
@@ -68,76 +51,26 @@ describe('CalendarActionHandler', () => {
       }
     ];
 
-    handler.actionsUpdated(actions);
-    assert.equal(actions, handler._actions);
+    handler.actionsUpdated(actions, now);
+    assert.deepEqual(handler._actions, actions);
   });
 
-  it('Should remove expired actions', () => {
-    const actions = [
-      {
-        date: new Date(2018, 0, 30, 10, 0, 0, 0),
-        expires: new Date(2018, 0, 30, 10, 0, 0, 0),
-        state: false,
-        summary: 'foo'
-      }
-    ];
-
-    handler.actionsUpdated(actions);
-    clock.tick(3601000);
-
-    handler._expireActions();
-
-    assert.isEmpty(handler._actions);
+  it('Should not fail without actions for the trigger date', () => {
+    assert.doesNotThrow(() => handler.execute(now));
   });
 
-  it('Should pick next action', () => {
-    const actions = [
-      {
-        date: new Date(2018, 0, 30, 10, 0, 0, 0),
-        expires: new Date(2018, 0, 30, 10, 0, 0, 0),
-        state: false,
-        summary: 'foo'
-      }
-    ];
+  it('Should reset all sensors when executing', () => {
+    handler.execute(now);
 
-    handler.actionsUpdated(actions);
-
-    const nextAction = handler._pickNextAction(now);
-    assert.equal(nextAction, actions[0]);
+    assert.isOk(calendarSensor.reset.calledOnce);
+    assert.isOk(testSensor.reset.calledOnce);
   });
 
-  it('Should schedule next action', () => {
-    const actions = [
-      {
-        date: new Date(2018, 0, 30, 10, 0, 0, 0),
-        expires: new Date(2018, 0, 30, 10, 0, 0, 0),
-        state: false,
-        summary: 'foo'
-      }
-    ];
+  it('Should push all sensors to HomeKit when executing', () => {
+    handler.execute(now);
 
-    handler.actionsUpdated(actions);
-
-    handler._scheduleNextActionAfter(now);
-
-    assert.isDefined(handler._actionTimer);
-  });
-
-  it('Should reset action timer when it expires', () => {
-    const actions = [
-      {
-        date: new Date(2018, 0, 30, 10, 0, 0, 0),
-        expires: new Date(2018, 0, 30, 10, 0, 0, 0),
-        state: false,
-        summary: 'foo'
-      }
-    ];
-
-    handler.start();
-    handler.actionsUpdated(actions);
-
-    clock.next();
-    assert.isUndefined(handler._actionTimer);
+    assert.isOk(calendarSensor.pushState.calledOnce);
+    assert.isOk(testSensor.pushState.calledOnce);
   });
 
   it('Should remove expired actions, when the action is executed', () => {
@@ -150,10 +83,8 @@ describe('CalendarActionHandler', () => {
       }
     ];
 
-    handler.start();
-    handler.actionsUpdated(actions);
-
-    clock.next();
+    handler.actionsUpdated(actions, now);
+    handler.execute(actions[0].date);
 
     assert.isEmpty(handler._actions);
   });
@@ -162,16 +93,14 @@ describe('CalendarActionHandler', () => {
     const actions = [
       {
         date: new Date(2018, 0, 30, 10, 0, 0, 0),
-        expires: new Date(2018, 0, 30, 10, 0, 0, 0),
+        expires: new Date(2018, 0, 30, 11, 0, 0, 0),
         state: true,
         summary: 'foo'
       }
     ];
 
-    handler.start();
-    handler.actionsUpdated(actions);
-
-    clock.next();
+    handler.actionsUpdated(actions, now);
+    handler.execute(actions[0].date);
 
     assert.isOk(calendarSensor.on.calledOnce);
   });
@@ -180,16 +109,14 @@ describe('CalendarActionHandler', () => {
     const actions = [
       {
         date: new Date(2018, 0, 30, 10, 0, 0, 0),
-        expires: new Date(2018, 0, 30, 10, 0, 0, 0),
+        expires: new Date(2018, 0, 30, 11, 0, 0, 0),
         state: false,
         summary: 'foo'
       }
     ];
 
-    handler.start();
-    handler.actionsUpdated(actions);
-
-    clock.next();
+    handler.actionsUpdated(actions, now);
+    handler.execute(actions[0].date);
 
     assert.isOk(calendarSensor.off.calledOnce);
   });
@@ -199,23 +126,83 @@ describe('CalendarActionHandler', () => {
     const actions = [
       {
         date: new Date(2018, 0, 30, 10, 0, 0, 0),
-        expires: new Date(2018, 0, 30, 10, 0, 0, 0),
+        expires: new Date(2018, 0, 30, 11, 0, 0, 0),
         state: true,
         summary: 'Test'
       }
     ];
 
-    handler.start();
-    handler.actionsUpdated(actions);
-
-    clock.next();
+    handler.actionsUpdated(actions, now);
+    handler.execute(actions[0].date);
 
     assert.isOk(calendarSensor.on.calledOnce);
-    assert.isOk(namedSensors[0].on.calledOnce);
+    assert.isOk(testSensor.on.calledOnce);
   });
 
   it('Should disable the named sensor and calendar sensor if matching action state is false', () => {
     const actions = [
+      {
+        date: new Date(2018, 0, 30, 10, 0, 0, 0),
+        expires: new Date(2018, 0, 30, 11, 0, 0, 0),
+        state: false,
+        summary: 'Test'
+      }
+    ];
+    handler.actionsUpdated(actions, now);
+    handler.execute(actions[0].date);
+
+    assert.isOk(calendarSensor.off.calledOnce);
+    assert.isOk(testSensor.off.calledOnce);
+  });
+
+  it('Should process multiple actions, which are scheduled for the same time', () => {
+    const actions = [
+      {
+        date: new Date(2018, 0, 30, 9, 0, 0, 0),
+        expires: new Date(2018, 0, 30, 10, 0, 0, 0),
+        state: true,
+        summary: 'Test'
+      },
+      {
+        date: new Date(2018, 0, 30, 10, 0, 0, 0),
+        expires: new Date(2018, 0, 30, 10, 0, 0, 0),
+        state: false,
+        summary: 'Test'
+      },
+      {
+        date: new Date(2018, 0, 30, 10, 0, 0, 0),
+        expires: new Date(2018, 0, 30, 10, 0, 0, 0),
+        state: true,
+        summary: 'foo'
+      }
+    ];
+
+    handler.actionsUpdated(actions, now);
+    calendarSensor.on.reset();
+    testSensor.on.reset();
+    testSensor.off.reset();
+
+    handler.execute(actions[1].date);
+
+    assert.isOk(calendarSensor.on.calledTwice);
+    assert.isOk(testSensor.on.calledOnce);
+    assert.isOk(testSensor.off.calledOnce);
+  });
+
+  it('Should process multiple actions, which are scheduled for the same time independent of order', () => {
+    const actions = [
+      {
+        date: new Date(2018, 0, 30, 9, 0, 0, 0),
+        expires: new Date(2018, 0, 30, 10, 0, 0, 0),
+        state: true,
+        summary: 'Test'
+      },
+      {
+        date: new Date(2018, 0, 30, 10, 0, 0, 0),
+        expires: new Date(2018, 0, 30, 10, 0, 0, 0),
+        state: true,
+        summary: 'foo'
+      },
       {
         date: new Date(2018, 0, 30, 10, 0, 0, 0),
         expires: new Date(2018, 0, 30, 10, 0, 0, 0),
@@ -224,12 +211,47 @@ describe('CalendarActionHandler', () => {
       }
     ];
 
-    handler.start();
-    handler.actionsUpdated(actions);
+    handler.actionsUpdated(actions, now);
+    calendarSensor.on.reset();
+    testSensor.on.reset();
+    testSensor.off.reset();
 
-    clock.next();
+    handler.execute(actions[1].date);
 
-    assert.isOk(calendarSensor.off.calledOnce);
-    assert.isOk(namedSensors[0].off.calledOnce);
+    assert.isOk(calendarSensor.on.calledTwice);
+    assert.isOk(testSensor.on.calledOnce);
+    assert.isOk(testSensor.off.calledOnce);
+  });
+
+  it('Should not fail if summary is not given', () => {
+    const actions = [
+      {
+        date: new Date(2018, 0, 30, 9, 0, 0, 0),
+        expires: new Date(2018, 0, 30, 10, 0, 0, 0),
+        state: true,
+        summary: undefined
+      }
+    ];
+
+    assert.doesNotThrow(() => {
+      handler.actionsUpdated(actions, now);
+      handler.execute(now);
+    });
+  });
+
+  it('Should not fail if summary is empty string', () => {
+    const actions = [
+      {
+        date: new Date(2018, 0, 30, 9, 0, 0, 0),
+        expires: new Date(2018, 0, 30, 10, 0, 0, 0),
+        state: true,
+        summary: ''
+      }
+    ];
+
+    assert.doesNotThrow(() => {
+      handler.actionsUpdated(actions, now);
+      handler.execute(now);
+    });
   });
 });

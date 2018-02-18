@@ -170,7 +170,7 @@ describe('CalendarActionBuilder', () => {
   });
 
 
-  it('Should sort all events into an order', () => {
+  it('Should remove expired events', () => {
     const actions = [
       {
         date: new Date(2018, 0, 30, 10, 0, 0, 0),
@@ -193,5 +193,79 @@ describe('CalendarActionBuilder', () => {
 
     const result = builder._filterExpiredEvents(actions, now);
     assert.deepEqual(result, expectedResult);
+  });
+
+  it('Should generate actions for two events', () => {
+    const expectedActions = [
+      {
+        date: twoEvents.foo.start,
+        expires: twoEvents.foo.end,
+        state: true,
+        summary: twoEvents.foo.summary
+      }, {
+        date: twoEvents.foo.end,
+        expires: twoEvents.foo.end,
+        state: false,
+        summary: twoEvents.foo.summary
+      },
+      {
+        date: twoEvents.bar.start,
+        expires: twoEvents.bar.end,
+        state: true,
+        summary: twoEvents.bar.summary
+      }, {
+        date: twoEvents.bar.end,
+        expires: twoEvents.bar.end,
+        state: false,
+        summary: twoEvents.bar.summary
+      }
+    ];
+
+    const now = new Date(2018, 0, 30, 9, 0, 0, 0);
+    const actions = builder.generateActions(twoEvents, now);
+
+    assert.equal(actions.length, 4, 'Not enough actions created.');
+    assert.deepEqual(actions, expectedActions);
+  });
+
+
+  it('Should generate actions for recurring event, occurring daily', () => {
+    /**
+     * Only test expansion of the recurring event - do not actually test 
+     * all recurrences as that's actually handled by node-ical. This only makes
+     * sure that we're generating more than one pair of actions for them.
+     */
+
+    const expectedActions = [
+      {
+        date: recurringEvent.foo.start,
+        expires: recurringEvent.foo.end,
+        state: true,
+        summary: recurringEvent.foo.summary
+      }, {
+        date: recurringEvent.foo.end,
+        expires: recurringEvent.foo.end,
+        state: false,
+        summary: recurringEvent.foo.summary
+      }
+    ];
+
+    const millisecondsPerDay = 1000 * 60 * 60 * 24;
+    for (let i = 1; i < 7; i++) {
+      const start = clone(expectedActions[0]);
+      const end = clone(expectedActions[1]);
+
+      start.date = new Date(start.date.valueOf() + (i * millisecondsPerDay));
+      start.expires = new Date(start.expires.valueOf() + (i * millisecondsPerDay));
+      end.date = new Date(end.date.valueOf() + (i * millisecondsPerDay));
+      end.expires = new Date(end.expires.valueOf() + (i * millisecondsPerDay));
+      expectedActions.push(start, end);
+    }
+
+    const now = new Date(2018, 0, 30, 9, 0, 0, 0);
+    const actions = builder.generateActions(recurringEvent, now);
+
+    assert.equal(actions.length, 14);
+    assert.deepEqual(actions, expectedActions);
   });
 });

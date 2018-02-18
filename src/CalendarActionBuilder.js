@@ -3,13 +3,13 @@
 const moment = require('moment');
 
 class CalendarActionBuilder {
-  generateActions(cal) {
+  generateActions(cal, now) {
     let allEvents = [].concat(
       this._generateNonRecurringEvents(cal),
-      this._generateRecurringEvents(cal, moment()));
+      this._generateRecurringEvents(cal, moment(now)));
 
     allEvents = this._sortEventsByDate(allEvents);
-    allEvents = this._filterExpiredEvents(allEvents);
+    allEvents = this._filterExpiredEvents(allEvents, now);
 
     return allEvents;
   }

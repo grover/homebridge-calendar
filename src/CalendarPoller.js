@@ -6,10 +6,11 @@ const ical = require('node-ical');
 
 class CalendarPoller extends EventEmitter {
 
-  constructor(log, url, interval) {
+  constructor(log, name, url, interval) {
     super();
 
     this.log = log;
+    this.name = name;
 
     this._url = url.replace('webcal://', 'http://');
     this._interval = interval;
@@ -36,6 +37,7 @@ class CalendarPoller extends EventEmitter {
 
   _loadCalendar() {
     // TODO: Make use of HTTP cache control stuff
+    this.log(`Updating calendar ${this.name}`);
     ical.fromURL(this._url, {}, (err, cal) => {
       if (err) {
         this.log(`Failed to load iCal calender: ${this.url} with error ${err}`);
