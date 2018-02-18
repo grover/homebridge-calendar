@@ -12,7 +12,6 @@ HomeKits own scheduling means are limited and in some instances not flexible eno
 [![Dependency Status](https://img.shields.io/david/grover/homebridge-calendar.svg?style=flat-square)](https://david-dm.org/grover/homebridge-calendar)
 [![devDependency Status](https://img.shields.io/david/dev/grover/homebridge-calendar.svg?style=flat-square)](https://david-dm.org/grover/homebridge-calendar#info=devDependencies)
 [![Node version](https://img.shields.io/node/v/homebridge-calendar.svg?style=flat)](http://nodejs.org/download/)
-[![Node version](https://img.shields.io/node/v/homebridge-calendar.svg?style=flat)](http://nodejs.org/download/)
 [![NPM Version](https://badge.fury.io/js/homebridge-calendar.svg?style=flat)](https://npmjs.org/package/homebridge-calendar)
 
 ## Supported calendars
