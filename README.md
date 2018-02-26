@@ -42,6 +42,7 @@ After [Homebridge](https://github.com/nfarina/homebridge) has been installed:
           "name": "Cal 1",
           "url": "webcal://",
           "pollingInterval": 5,
+          "offset": "-8h",
           "sensors": [
             "Sensor 1",
             "Sensor 2"
@@ -69,6 +70,23 @@ The above example creates the plugin with three contact sensors:
 `Cal 1` will be opened any time any event starts in the calendar. `Sensor 1` and `Sensor 2` will only open if the event name starts with `Sensor 1` or `Sensor 2` respectively.
 
 Calendar events may overlap, may be full day, recurring or single occurance events and can even span multiple days.
+
+### Offset
+
+You might want to trigger the sensors earlier than the scheduled event. This can be done by applying an offset to the calendar. An offset specifies the time to subtract from the scheduled start of the event. The offset essentially moves the start date ahead by the specified amount of time. The end date of the events is unaffected. Essentially this extends the event duration by the offset.
+
+#### Offset syntax
+
+An offset is a combination of a number and a postfix that indicates the unit of time to move. The supported offset postfixes are the following:
+
+| Postfix | Example | Description |
+|---------|---------|-------------|
+| d       | 2d      | Make an event start earlier by two days. |
+| h       | 8h      | Make an event start earlier by eight hours. |
+| m       | 15m     | Make an event start earlier by fifteen minutes. |
+| s       | 10s     | Make an event start earlier by ten seconds. |
+
+An offset is always negative, e.g. it moves the start to an earlier time. You can specify the minus in front of the offset. Positive offsets (with a plus symbol in front) to move to a later time are not supported.
 
 ### Sharing an iCloud calender
 

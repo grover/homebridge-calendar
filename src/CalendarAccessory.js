@@ -33,7 +33,7 @@ class CalendarAccessory {
       .on('started', this._onPollingStarted.bind(this))
       .on('stopped', this._onPollingStopped.bind(this));
 
-    this._actionBuilder = new CalendarActionBuilder();
+    this._actionBuilder = new CalendarActionBuilder(this.config.offset);
 
     this._scheduleHandler = new CalendarScheduleHandler(this.log);
     this._scheduleHandler

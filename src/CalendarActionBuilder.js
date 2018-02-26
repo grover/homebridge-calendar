@@ -1,8 +1,26 @@
 'use strict';
 
 const moment = require('moment');
+require('relative-time-parser');
 
 class CalendarActionBuilder {
+
+  constructor(offset) {
+    if (offset === undefined) {
+      this._startOffset = '-0s';
+    }
+    else if (offset.startsWith('-') === false) {
+      this._startOffset = `-${offset}`;
+    }
+    else {
+      this._startOffset = offset;
+    }
+
+    if (moment().isRelativeTimeFormat(this._startOffset) === false) {
+      throw new Error('Invalid relative time format.');
+    }
+  }
+
   generateActions(cal, now) {
     let allEvents = [].concat(
       this._generateNonRecurringEvents(cal),
@@ -22,7 +40,7 @@ class CalendarActionBuilder {
         const event = cal[key];
         if (event.type === 'VEVENT' && event.rrule === undefined) {
           events.push({
-            date: event.start,
+            date: moment(event.start).relativeTime(this._startOffset).toDate(),
             expires: event.end,
             state: true,
             summary: event.summary
@@ -40,7 +58,7 @@ class CalendarActionBuilder {
     return events;
   }
 
-  _generateRecurringEvents(cal, moment) {
+  _generateRecurringEvents(cal, now) {
     const events = [];
 
     for (const key in cal) {
@@ -48,14 +66,14 @@ class CalendarActionBuilder {
         const event = cal[key];
         if (event.type === 'VEVENT' && event.rrule !== undefined) {
           const duration = event.end - event.start;
-          const rstart = moment.subtract(2 * duration, 'milliseconds').toDate();
-          const rend = moment.add(7, 'days').toDate();
+          const rstart = now.subtract(2 * duration, 'milliseconds').toDate();
+          const rend = now.add(7, 'days').toDate();
           const expandedStartDates = event.rrule.between(rstart, rend, true);
 
           for (const startDate of expandedStartDates) {
             const endDate = new Date(startDate.valueOf() + duration);
             events.push({
-              date: startDate,
+              date: moment(startDate).relativeTime(this._startOffset).toDate(),
               expires: endDate,
               state: true,
               summary: event.summary
