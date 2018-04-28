@@ -125,4 +125,26 @@ describe('CalendarScheduleHandler', () => {
 
     assert.equal(raised, 2);
   });
+
+  it('Should only sleep for a day at most', () => {
+    let raised = 0;
+
+    handler.on('event', () => {
+      raised++;
+    });
+
+    const expectedEvents = [
+      new Date(2018, 1, 1, 10, 0, 0, 0)
+    ];
+    handler.scheduleUpdated(expectedEvents, now);
+
+    clock.next(); // 2018-0-31T09:00:00.000
+    assert.equal(raised, 0);
+
+    clock.next(); // 2018-1-1T09:00:00.000
+    assert.equal(raised, 0);
+
+    clock.next(); // 2018-1-1T10:00:00.000
+    assert.equal(raised, 1);
+  });
 });

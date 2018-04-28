@@ -41,7 +41,12 @@ class CalendarScheduleHandler extends EventEmitter {
 
     this._resetTimer();
 
-    const diffInMilliseconds = nextEventAt.valueOf() - Date.now();
+    let diffInMilliseconds = nextEventAt.valueOf() - Date.now();
+    const millisecondsPerDay = 24 * 60 * 60 * 1000;
+    if (diffInMilliseconds > millisecondsPerDay) {
+      diffInMilliseconds = millisecondsPerDay;
+    }
+
     this.log(`Scheduling next action in ${diffInMilliseconds}ms`);
 
     this._timer = setTimeout(this._expire.bind(this), diffInMilliseconds);

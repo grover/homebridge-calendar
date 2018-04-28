@@ -1,7 +1,6 @@
 'use strict';
 
-const moment = require('moment');
-require('relative-time-parser');
+const moment = require('./moment');
 
 class CalendarActionBuilder {
 

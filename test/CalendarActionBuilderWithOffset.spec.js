@@ -2,7 +2,7 @@
 
 const assert = require('chai').assert;
 const clone = require('clone');
-const moment = require('moment');
+const moment = require('./../src/moment');
 const RRule = require('rrule').RRule;
 
 const CalendarActionBuilder = require('./../src/CalendarActionBuilder');
