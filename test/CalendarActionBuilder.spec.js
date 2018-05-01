@@ -49,6 +49,22 @@ describe('CalendarActionBuilder', () => {
     }
   };
 
+  const longRecurringEvent = {
+    'long': {
+      type: 'VEVENT',
+      summary: 'Long',
+      start: new Date(2018, 2, 19, 7, 0, 0, 0),
+      end: new Date(2018, 2, 26, 6, 0, 0, 0),
+      rrule: new RRule({
+        freq: RRule.WEEKLY,
+        interval: 2,
+        wkst: 0,
+        dtstart: new Date(2018, 2, 19, 7, 0, 0, 0),
+        until: null
+      })
+    }
+  };
+
   it('Builds a start and end action for a single non-recurring event', () => {
 
     const expectedActions = [
@@ -143,6 +159,11 @@ describe('CalendarActionBuilder', () => {
     const actions = builder._generateRecurringEvents(recurringEvent, moment('20180130'));
     assert.equal(actions.length, 14);
     assert.deepEqual(actions, expectedActions);
+  });
+
+  it('Builds long recurring event actions', () => {
+    const actions = builder._generateRecurringEvents(longRecurringEvent, moment('20180501'));
+    assert.equal(actions.length, 2);
   });
 
   it('Should sort all events into an order', () => {

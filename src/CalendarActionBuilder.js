@@ -65,8 +65,10 @@ class CalendarActionBuilder {
         const event = cal[key];
         if (event.type === 'VEVENT' && event.rrule !== undefined) {
           const duration = event.end - event.start;
-          const rstart = now.subtract(2 * duration, 'milliseconds').toDate();
-          const rend = now.add(7, 'days').toDate();
+
+          const rstart = now.clone().subtract(2 * duration, 'milliseconds').toDate();
+          const rend = now.clone().add(7, 'days').toDate();
+
           const expandedStartDates = event.rrule.between(rstart, rend, true);
 
           for (const startDate of expandedStartDates) {
