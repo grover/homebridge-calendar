@@ -33,6 +33,7 @@
   },
   "dependencies": {
     "clone": "^2.1.1",
+    "ical-expander": "^2.0.0",
     "moment": "^2.22.1",
     "node-ical": "^0.5.4",
     "relative-time-parser": "^1.0.9",

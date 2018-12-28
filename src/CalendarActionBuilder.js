@@ -28,67 +28,45 @@ class CalendarActionBuilder {
     allEvents = this._sortEventsByDate(allEvents);
     allEvents = this._filterExpiredEvents(allEvents, now);
 
+    console.log(JSON.stringify(allEvents));
+
     return allEvents;
   }
 
   _generateNonRecurringEvents(cal) {
-    const events = [];
 
-    for (const key in cal) {
-      if (cal.hasOwnProperty(key)) {
-        const event = cal[key];
-        if (event.type === 'VEVENT' && event.rrule === undefined) {
-          events.push({
-            date: moment(event.start).relativeTime(this._startOffset).toDate(),
-            expires: event.end,
-            state: true,
-            summary: event.summary
-          });
-          events.push({
-            date: event.end,
-            expires: event.end,
-            state: false,
-            summary: event.summary
-          });
-        }
-      }
-    }
+    const events = [].concat(cal.events.map(e => ({
+        date: moment(e.startDate.toJSDate()).relativeTime(this._startOffset).toDate(),
+        expires: e.endDate.toJSDate(),
+        state: true,
+        summary: e.summary
+      })),
+      cal.events.map(e => ({
+        date: e.endDate.toJSDate(),
+        expires: e.endDate.toJSDate(),
+        state: false,
+        summary: e.summary
+      }))
+    );
 
     return events;
   }
 
   _generateRecurringEvents(cal, now) {
-    const events = [];
 
-    for (const key in cal) {
-      if (cal.hasOwnProperty(key)) {
-        const event = cal[key];
-        if (event.type === 'VEVENT' && event.rrule !== undefined) {
-          const duration = event.end - event.start;
-
-          const rstart = now.clone().subtract(2 * duration, 'milliseconds').toDate();
-          const rend = now.clone().add(7, 'days').toDate();
-
-          const expandedStartDates = event.rrule.between(rstart, rend, true);
-
-          for (const startDate of expandedStartDates) {
-            const endDate = new Date(startDate.valueOf() + duration);
-            events.push({
-              date: moment(startDate).relativeTime(this._startOffset).toDate(),
-              expires: endDate,
-              state: true,
-              summary: event.summary
-            });
-            events.push({
-              date: endDate,
-              expires: endDate,
-              state: false,
-              summary: event.summary
-            });
-          }
-        }
-      }
-    }
+    const events = [].concat(cal.occurrences.map(e => ({
+        date: moment(e.startDate.toJSDate()).relativeTime(this._startOffset).toDate(),
+        expires: e.endDate.toJSDate(),
+        state: true,
+        summary: e.summary
+      })),
+      cal.occurrences.map(e => ({
+        date: e.endDate.toJSDate(),
+        expires: e.endDate.toJSDate(),
+        state: false,
+        summary: e.summary
+      }))
+    );
 
     return events;
   }
@@ -99,6 +77,9 @@ class CalendarActionBuilder {
   }
 
   _filterExpiredEvents(events, now) {
+
+    console.log(now);
+
     // Keep only events that expire right now or in the future
     return events.filter(event => event.expires.valueOf() >= now);
   }
