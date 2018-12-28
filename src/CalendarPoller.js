@@ -47,16 +47,16 @@ class CalendarPoller extends EventEmitter {
   
       // A chunk of data has been recieved.
       resp.on('data', (chunk) => {
-          data += chunk;
+        data += chunk;
       });
   
       // The whole response has been received. Print out the result.
       resp.on('end', () => {
-          fs.writeFileSync('./data.ics', data);
-          this._refreshCalendar();
+        fs.writeFileSync('./data.ics', data);
+        this._refreshCalendar();
       });
   
-    }).on("error", (err) => {
+    }).on('error', (err) => {
 
       if (err) {
         this.log(`Failed to load iCal calender: ${this.url} with error ${err}`);
@@ -70,13 +70,13 @@ class CalendarPoller extends EventEmitter {
 
     const ics = fs.readFileSync('./data.ics', 'utf-8');
     const icalExpander = new IcalExpander({
-        ics,
-        maxIterations: 1000
+      ics,
+      maxIterations: 1000
     });
 
     const duration = 7; // days
     var now = new Date();
-    var next = new Date(now.getTime() + duration * 24 * 60 * 60 * 1000)
+    var next = new Date(now.getTime() + duration * 24 * 60 * 60 * 1000);
 
     const cal = icalExpander.between(now, next);
     this._printEvent(cal);
@@ -99,26 +99,6 @@ class CalendarPoller extends EventEmitter {
     }, this._interval);
   }
 
-  _printEvent(events) {
-
-    const mappedEvents = events.events.map(e => ({
-      startDate: e.startDate,
-      endDate: e.endDate,
-      summary: e.summary
-    }));
-
-    const mappedOccurrences = events.occurrences.map(o => ({
-      startDate: o.startDate,
-      endDate: o.endDate,
-      summary: o.item.summary
-    }));
-
-    const allEvents = [].concat(mappedEvents, mappedOccurrences);
-
-    console.log(allEvents.map(e => `${e.startDate.toJSDate().toISOString()} to ${e.endDate.toJSDate().toISOString()} - ${e.summary}`).join('\n'));
-
-
-  }
 }
 
 module.exports = CalendarPoller;

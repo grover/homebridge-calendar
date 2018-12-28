@@ -34,8 +34,8 @@ function createCal(events) {
   const ics = cal.toString();
 
   const icalExpander = new IcalExpander({
-      ics,
-      maxIterations: 100
+    ics,
+    maxIterations: 100
   });
 
   const calendar = icalExpander.all();

@@ -3,7 +3,6 @@
 const assert = require('chai').assert;
 const clone = require('clone');
 const moment = require('./../src/moment');
-const RRule = require('rrule').RRule;
 
 const CalendarActionBuilder = require('./../src/CalendarActionBuilder');
 
@@ -35,8 +34,8 @@ function createCal(events) {
   const ics = cal.toString();
 
   const icalExpander = new IcalExpander({
-      ics,
-      maxIterations: 100
+    ics,
+    maxIterations: 100
   });
 
   const calendar = icalExpander.all();

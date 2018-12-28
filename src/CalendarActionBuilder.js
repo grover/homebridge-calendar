@@ -7,11 +7,9 @@ class CalendarActionBuilder {
   constructor(offset) {
     if (offset === undefined) {
       this._startOffset = '-0s';
-    }
-    else if (offset.startsWith('-') === false) {
+    } else if (offset.startsWith('-') === false) {
       this._startOffset = `-${offset}`;
-    }
-    else {
+    } else {
       this._startOffset = offset;
     }
 
@@ -34,37 +32,35 @@ class CalendarActionBuilder {
   _generateNonRecurringEvents(cal) {
 
     const events = [].concat(cal.events.map(e => ({
-        date: moment(e.startDate.toJSDate()).relativeTime(this._startOffset).toDate(),
-        expires: e.endDate.toJSDate(),
-        state: true,
-        summary: e.summary
-      })),
-      cal.events.map(e => ({
-        date: e.endDate.toJSDate(),
-        expires: e.endDate.toJSDate(),
-        state: false,
-        summary: e.summary
-      }))
-    );
+      date: moment(e.startDate.toJSDate()).relativeTime(this._startOffset).toDate(),
+      expires: e.endDate.toJSDate(),
+      state: true,
+      summary: e.summary
+    })),
+    cal.events.map(e => ({
+      date: e.endDate.toJSDate(),
+      expires: e.endDate.toJSDate(),
+      state: false,
+      summary: e.summary
+    })));
 
     return events;
   }
 
-  _generateRecurringEvents(cal, now) {
+  _generateRecurringEvents(cal) {
 
     const events = [].concat(cal.occurrences.map(e => ({
-        date: moment(e.startDate.toJSDate()).relativeTime(this._startOffset).toDate(),
-        expires: e.endDate.toJSDate(),
-        state: true,
-        summary: e.item.summary
-      })),
-      cal.occurrences.map(e => ({
-        date: e.endDate.toJSDate(),
-        expires: e.endDate.toJSDate(),
-        state: false,
-        summary: e.item.summary
-      }))
-    );
+      date: moment(e.startDate.toJSDate()).relativeTime(this._startOffset).toDate(),
+      expires: e.endDate.toJSDate(),
+      state: true,
+      summary: e.item.summary
+    })),
+    cal.occurrences.map(e => ({
+      date: e.endDate.toJSDate(),
+      expires: e.endDate.toJSDate(),
+      state: false,
+      summary: e.item.summary
+    })));
 
     return events;
   }
