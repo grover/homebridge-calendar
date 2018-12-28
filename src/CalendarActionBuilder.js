@@ -56,13 +56,13 @@ class CalendarActionBuilder {
         date: moment(e.startDate.toJSDate()).relativeTime(this._startOffset).toDate(),
         expires: e.endDate.toJSDate(),
         state: true,
-        summary: e.summary
+        summary: e.item.summary
       })),
       cal.occurrences.map(e => ({
         date: e.endDate.toJSDate(),
         expires: e.endDate.toJSDate(),
         state: false,
-        summary: e.summary
+        summary: e.item.summary
       }))
     );
 

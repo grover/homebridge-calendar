@@ -3,9 +3,46 @@
 const assert = require('chai').assert;
 const clone = require('clone');
 const moment = require('./../src/moment');
-const RRule = require('rrule').RRule;
 
 const CalendarActionBuilder = require('./../src/CalendarActionBuilder');
+
+const ical = require('ical-generator');
+const IcalExpander = require('ical-expander');
+  
+function createCal(events) {
+
+  const cal = ical({domain: 'github.com', name: 'test calendar'});
+
+  for (var property in events) {
+    if (events.hasOwnProperty(property)) {
+      
+      var event = events[property];
+
+      var e = cal.createEvent({
+        start: event.start,
+        end: event.end,
+        summary: event.summary
+      });
+
+      if (event.rrule) {
+        e.repeating(event.rrule);
+      }
+      
+    }
+  }
+
+  const ics = cal.toString();
+
+  const icalExpander = new IcalExpander({
+      ics,
+      maxIterations: 100
+  });
+
+  const calendar = icalExpander.all();
+
+  return calendar;
+
+}
 
 describe('CalendarActionBuilder', () => {
 
@@ -13,7 +50,6 @@ describe('CalendarActionBuilder', () => {
 
   const oneEvent = {
     'foo': {
-      type: 'VEVENT',
       summary: 'Test',
       start: new Date(2018, 0, 30, 10, 0, 0, 0),
       end: new Date(2018, 0, 30, 10, 15, 0, 0),
@@ -22,13 +58,11 @@ describe('CalendarActionBuilder', () => {
 
   const twoEvents = {
     'foo': {
-      type: 'VEVENT',
       summary: 'Test',
       start: new Date(2018, 0, 30, 10, 0, 0, 0),
       end: new Date(2018, 0, 30, 10, 15, 0, 0),
     },
     'bar': {
-      type: 'VEVENT',
       summary: 'Test2',
       start: new Date(2018, 0, 30, 11, 0, 0, 0),
       end: new Date(2018, 0, 30, 11, 15, 0, 0),
@@ -37,31 +71,26 @@ describe('CalendarActionBuilder', () => {
 
   const recurringEvent = {
     'foo': {
-      type: 'VEVENT',
       summary: 'Test',
       start: new Date(2018, 0, 30, 10, 0, 0, 0),
       end: new Date(2018, 0, 30, 10, 15, 0, 0),
-      rrule: new RRule({
-        freq: RRule.DAILY,
-        dtstart: new Date(2018, 0, 30, 10, 0),
-        until: new Date(new Date().getFullYear() + 1, 0, 30, 10, 0)
-      })
+      rrule: {
+        freq: 'DAILY',
+        until: new Date(2018, 1, 5, 10, 0)
+      }
     }
   };
 
   const longRecurringEvent = {
     'long': {
-      type: 'VEVENT',
       summary: 'Long',
       start: new Date(2018, 2, 19, 7, 0, 0, 0),
       end: new Date(2018, 2, 26, 6, 0, 0, 0),
-      rrule: new RRule({
-        freq: RRule.WEEKLY,
+      rrule: {
+        freq: 'WEEKLY',
         interval: 2,
-        wkst: 0,
-        dtstart: new Date(2018, 2, 19, 7, 0, 0, 0),
-        until: null
-      })
+        until: new Date(2018, 2, 26, 10, 0)
+      }
     }
   };
 
@@ -81,7 +110,7 @@ describe('CalendarActionBuilder', () => {
       }
     ];
 
-    const actions = builder._generateNonRecurringEvents(oneEvent);
+    const actions = builder._generateNonRecurringEvents(createCal(oneEvent));
     assert.equal(actions.length, 2, 'Not enough actions created.');
     assert.deepEqual(actions, expectedActions);
   });
@@ -95,16 +124,15 @@ describe('CalendarActionBuilder', () => {
         state: true,
         summary: twoEvents.foo.summary
       }, {
-        date: twoEvents.foo.end,
-        expires: twoEvents.foo.end,
-        state: false,
-        summary: twoEvents.foo.summary
-      },
-      {
         date: twoEvents.bar.start,
         expires: twoEvents.bar.end,
         state: true,
         summary: twoEvents.bar.summary
+      }, {
+        date: twoEvents.foo.end,
+        expires: twoEvents.foo.end,
+        state: false,
+        summary: twoEvents.foo.summary
       }, {
         date: twoEvents.bar.end,
         expires: twoEvents.bar.end,
@@ -113,14 +141,14 @@ describe('CalendarActionBuilder', () => {
       }
     ];
 
-    const actions = builder._generateNonRecurringEvents(twoEvents);
+    const actions = builder._generateNonRecurringEvents(createCal(twoEvents));
     assert.equal(actions.length, 4, 'Not enough actions created.');
     assert.deepEqual(actions, expectedActions);
   });
 
 
   it('Builds a start and end action for a single recurring event, occurring daily', () => {
-    assert.isEmpty(builder._generateNonRecurringEvents(recurringEvent));
+    assert.isEmpty(builder._generateNonRecurringEvents(createCal(recurringEvent)));
   });
 
   it('Builds a start and end action for a single recurring event, occurring daily', () => {
@@ -156,13 +184,13 @@ describe('CalendarActionBuilder', () => {
       expectedActions.push(start, end);
     }
 
-    const actions = builder._generateRecurringEvents(recurringEvent, moment('20180130'));
+    const actions = builder._generateRecurringEvents(createCal(recurringEvent), moment('20180130'));
     assert.equal(actions.length, 14);
-    assert.deepEqual(actions, expectedActions);
+    assert.deepEqual(builder._sortEventsByDate(actions), builder._sortEventsByDate(expectedActions));
   });
 
   it('Builds long recurring event actions', () => {
-    const actions = builder._generateRecurringEvents(longRecurringEvent, moment('20180501'));
+    const actions = builder._generateRecurringEvents(createCal(longRecurringEvent), moment('20180501'));
     assert.equal(actions.length, 2);
   });
 
@@ -243,7 +271,7 @@ describe('CalendarActionBuilder', () => {
     ];
 
     const now = new Date(2018, 0, 30, 9, 0, 0, 0);
-    const actions = builder.generateActions(twoEvents, now);
+    const actions = builder.generateActions(createCal(twoEvents), now);
 
     assert.equal(actions.length, 4, 'Not enough actions created.');
     assert.deepEqual(actions, expectedActions);
@@ -284,9 +312,9 @@ describe('CalendarActionBuilder', () => {
     }
 
     const now = new Date(2018, 0, 30, 9, 0, 0, 0);
-    const actions = builder.generateActions(recurringEvent, now);
+    const actions = builder.generateActions(createCal(recurringEvent), now);
 
     assert.equal(actions.length, 14);
-    assert.deepEqual(actions, expectedActions);
+    assert.deepEqual(builder._sortEventsByDate(actions), builder._sortEventsByDate(expectedActions));
   });
 });
