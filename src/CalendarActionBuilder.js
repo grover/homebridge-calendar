@@ -75,9 +75,6 @@ class CalendarActionBuilder {
   }
 
   _filterExpiredEvents(events, now) {
-
-    console.log(now);
-
     // Keep only events that expire right now or in the future
     return events.filter(event => event.expires.valueOf() >= now);
   }
