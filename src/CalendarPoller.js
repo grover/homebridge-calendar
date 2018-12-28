@@ -79,7 +79,7 @@ class CalendarPoller extends EventEmitter {
     var next = new Date(now.getTime() + duration * 24 * 60 * 60 * 1000)
 
     const cal = icalExpander.between(now, next);
-    this._printEvent(cal);
+    //this._printEvent(cal);
 
     if (cal) {
       this.emit('data', cal);

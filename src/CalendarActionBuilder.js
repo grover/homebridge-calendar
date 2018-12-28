@@ -28,8 +28,6 @@ class CalendarActionBuilder {
     allEvents = this._sortEventsByDate(allEvents);
     allEvents = this._filterExpiredEvents(allEvents, now);
 
-    console.log(JSON.stringify(allEvents));
-
     return allEvents;
   }
 
