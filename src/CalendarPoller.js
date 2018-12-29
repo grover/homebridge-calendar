@@ -50,7 +50,7 @@ class CalendarPoller extends EventEmitter {
         data += chunk;
       });
   
-      // The whole response has been received. Print out the result.
+      // The whole response has been received. 
       resp.on('end', () => {
         fs.writeFileSync('./data.ics', data);
         this._refreshCalendar();
@@ -79,7 +79,6 @@ class CalendarPoller extends EventEmitter {
     var next = new Date(now.getTime() + duration * 24 * 60 * 60 * 1000);
 
     const cal = icalExpander.between(now, next);
-    this._printEvent(cal);
 
     if (cal) {
       this.emit('data', cal);

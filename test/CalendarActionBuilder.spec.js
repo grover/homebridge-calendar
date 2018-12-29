@@ -8,6 +8,7 @@ const CalendarActionBuilder = require('./../src/CalendarActionBuilder');
 
 const ical = require('ical-generator');
 const IcalExpander = require('ical-expander');
+const fs = require('fs');
   
 function createCal(events) {
 
@@ -317,4 +318,67 @@ describe('CalendarActionBuilder', () => {
     assert.equal(actions.length, 14);
     assert.deepEqual(builder._sortEventsByDate(actions), builder._sortEventsByDate(expectedActions));
   });
+
+  it('Should generate actions for recurring event, occurring daily, with exceptions', () => {
+
+    const expectedActions = [
+      {
+        date: new Date(2018, 11, 1, 8, 30, 0, 0),
+        expires: new Date(2018, 11, 1, 11, 30, 0, 0),
+        state: true,
+        summary: 'Test'
+      }, {
+        date: new Date(2018, 11, 1, 11, 30, 0, 0),
+        expires: new Date(2018, 11, 1, 11, 30, 0, 0),
+        state: false,
+        summary: 'Test'
+      }
+    ];
+
+    const millisecondsPerDay = 1000 * 60 * 60 * 24;
+
+    for (let i = 1; i < 14; i++) {
+      const start = clone(expectedActions[0]);
+      const end = clone(expectedActions[1]);
+
+      start.date = new Date(start.date.valueOf() + (i * millisecondsPerDay));
+      start.expires = new Date(start.expires.valueOf() + (i * millisecondsPerDay));
+      end.date = new Date(end.date.valueOf() + (i * millisecondsPerDay));
+      end.expires = new Date(end.expires.valueOf() + (i * millisecondsPerDay));
+
+      if (i == 4) {
+        // exception on day 5 -> no events
+        continue;
+
+      } else if (i == 11) {
+        // exception on day 11 -> move by 4 hours
+        const delta = 4 * 60 * 60 * 1000;
+
+        start.date = new Date(start.date.valueOf() + delta);
+        start.expires = new Date(start.expires.valueOf() + delta);
+        end.date = new Date(end.date.valueOf() + delta);
+        end.expires = new Date(end.expires.valueOf() + delta);
+      } 
+
+      expectedActions.push(start, end);
+    }
+
+    const ics = fs.readFileSync('./test/google.ics', 'utf-8');
+    const icalExpander = new IcalExpander({
+      ics,
+      maxIterations: 1000
+    });
+
+    const now = new Date(2018, 11, 1, 7, 0, 0, 0);
+    const cal = icalExpander.all();
+
+    console.log(cal);
+
+    const actions = builder.generateActions(cal, now);
+
+    assert.equal(actions.length, 26);
+    assert.deepEqual(builder._sortEventsByDate(actions), builder._sortEventsByDate(expectedActions));
+
+  });
+
 });
