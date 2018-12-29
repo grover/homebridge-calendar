@@ -323,13 +323,13 @@ describe('CalendarActionBuilder', () => {
 
     const expectedActions = [
       {
-        date: new Date(2018, 11, 1, 8, 30, 0, 0),
-        expires: new Date(2018, 11, 1, 11, 30, 0, 0),
+        date: new Date(Date.UTC(2018, 11, 1, 7, 30, 0, 0)),
+        expires: new Date(Date.UTC(2018, 11, 1, 10, 30, 0, 0)),
         state: true,
         summary: 'Test'
       }, {
-        date: new Date(2018, 11, 1, 11, 30, 0, 0),
-        expires: new Date(2018, 11, 1, 11, 30, 0, 0),
+        date: new Date(Date.UTC(2018, 11, 1, 10, 30, 0, 0)),
+        expires: new Date(Date.UTC(2018, 11, 1, 10, 30, 0, 0)),
         state: false,
         summary: 'Test'
       }
@@ -371,8 +371,6 @@ describe('CalendarActionBuilder', () => {
 
     const now = new Date(2018, 11, 1, 7, 0, 0, 0);
     const cal = icalExpander.all();
-
-    console.log(cal);
 
     const actions = builder.generateActions(cal, now);
 
