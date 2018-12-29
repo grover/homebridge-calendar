@@ -3,7 +3,6 @@
 const EventEmitter = require('events').EventEmitter;
 const IcalExpander = require('ical-expander');
 const https = require('https');
-const fs = require('fs');
 
 class CalendarPoller extends EventEmitter {
 
@@ -52,8 +51,7 @@ class CalendarPoller extends EventEmitter {
   
       // The whole response has been received. 
       resp.on('end', () => {
-        fs.writeFileSync('./data.ics', data);
-        this._refreshCalendar();
+        this._refreshCalendar(data);
       });
   
     }).on('error', (err) => {
@@ -66,11 +64,10 @@ class CalendarPoller extends EventEmitter {
     });
   }
 
-  _refreshCalendar() {
+  _refreshCalendar(data) {
 
-    const ics = fs.readFileSync('./data.ics', 'utf-8');
     const icalExpander = new IcalExpander({
-      ics,
+      ics: data,
       maxIterations: 1000
     });
 
