@@ -1,8 +1,8 @@
 'use strict';
 
 const EventEmitter = require('events').EventEmitter;
-
-const ical = require('node-ical');
+const IcalExpander = require('ical-expander');
+const https = require('https');
 
 class CalendarPoller extends EventEmitter {
 
@@ -12,7 +12,7 @@ class CalendarPoller extends EventEmitter {
     this.log = log;
     this.name = name;
 
-    this._url = url.replace('webcal://', 'http://');
+    this._url = url.replace('webcal://', 'https://');
     this._interval = interval;
     this._isStarted = false;
   }
@@ -38,18 +38,50 @@ class CalendarPoller extends EventEmitter {
   _loadCalendar() {
     // TODO: Make use of HTTP cache control stuff
     this.log(`Updating calendar ${this.name}`);
-    ical.fromURL(this._url, {}, (err, cal) => {
+
+    https.get(this._url, (resp) => {
+
+      resp.setEncoding('utf8');
+      let data = '';
+  
+      // A chunk of data has been recieved.
+      resp.on('data', (chunk) => {
+        data += chunk;
+      });
+  
+      // The whole response has been received. 
+      resp.on('end', () => {
+        this._refreshCalendar(data);
+      });
+  
+    }).on('error', (err) => {
+
       if (err) {
         this.log(`Failed to load iCal calender: ${this.url} with error ${err}`);
         this.emit('error', err);
       }
 
-      if (cal) {
-        this.emit('data', cal);
-      }
-
-      this._scheduleNextIteration();
     });
+  }
+
+  _refreshCalendar(data) {
+
+    const icalExpander = new IcalExpander({
+      ics: data,
+      maxIterations: 1000
+    });
+
+    const duration = 7; // days
+    var now = new Date();
+    var next = new Date(now.getTime() + duration * 24 * 60 * 60 * 1000);
+
+    const cal = icalExpander.between(now, next);
+
+    if (cal) {
+      this.emit('data', cal);
+    }
+
+    this._scheduleNextIteration();
   }
 
   _scheduleNextIteration() {
@@ -62,6 +94,7 @@ class CalendarPoller extends EventEmitter {
       this._loadCalendar();
     }, this._interval);
   }
+
 }
 
 module.exports = CalendarPoller;

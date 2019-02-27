@@ -3,15 +3,51 @@
 const assert = require('chai').assert;
 const clone = require('clone');
 const moment = require('./../src/moment');
-const RRule = require('rrule').RRule;
 
 const CalendarActionBuilder = require('./../src/CalendarActionBuilder');
+
+const ical = require('ical-generator');
+const IcalExpander = require('ical-expander');
+  
+function createCal(events) {
+
+  const cal = ical({domain: 'github.com', name: 'test calendar'});
+
+  for (var property in events) {
+    if (events.hasOwnProperty(property)) {
+      
+      var event = events[property];
+
+      var e = cal.createEvent({
+        start: event.start,
+        end: event.end,
+        summary: event.summary
+      });
+
+      if (event.rrule) {
+        e.repeating(event.rrule);
+      }
+      
+    }
+  }
+
+  const ics = cal.toString();
+
+  const icalExpander = new IcalExpander({
+    ics,
+    maxIterations: 100
+  });
+
+  const calendar = icalExpander.all();
+
+  return calendar;
+
+}
 
 describe('CalendarActionBuilder with offset', () => {
 
   const oneEvent = {
     'foo': {
-      type: 'VEVENT',
       summary: 'Test',
       start: new Date(2018, 0, 30, 10, 0, 0, 0),
       end: new Date(2018, 0, 30, 10, 15, 0, 0),
@@ -20,15 +56,13 @@ describe('CalendarActionBuilder with offset', () => {
 
   const recurringEvent = {
     'foo': {
-      type: 'VEVENT',
       summary: 'Test',
       start: new Date(2018, 0, 30, 10, 0, 0, 0),
       end: new Date(2018, 0, 30, 10, 15, 0, 0),
-      rrule: new RRule({
-        freq: RRule.DAILY,
-        dtstart: new Date(2018, 0, 30, 10, 0),
-        until: new Date(new Date().getFullYear() + 1, 0, 30, 10, 0)
-      })
+      rrule: {
+        freq: 'DAILY',
+        until: new Date(2018, 1, 5, 10, 0)
+      }
     }
   };
 
@@ -48,7 +82,7 @@ describe('CalendarActionBuilder with offset', () => {
     ];
 
     const actionBuilder = new CalendarActionBuilder('-2d');
-    const actions = actionBuilder._generateNonRecurringEvents(oneEvent);
+    const actions = actionBuilder._generateNonRecurringEvents(createCal(oneEvent));
 
     assert.deepEqual(actions, expectedActions);
   });
@@ -69,7 +103,7 @@ describe('CalendarActionBuilder with offset', () => {
     ];
 
     const actionBuilder = new CalendarActionBuilder('-4h');
-    const actions = actionBuilder._generateNonRecurringEvents(oneEvent);
+    const actions = actionBuilder._generateNonRecurringEvents(createCal(oneEvent));
 
     assert.deepEqual(actions, expectedActions);
   });
@@ -91,7 +125,7 @@ describe('CalendarActionBuilder with offset', () => {
     ];
 
     const actionBuilder = new CalendarActionBuilder('-30m');
-    const actions = actionBuilder._generateNonRecurringEvents(oneEvent);
+    const actions = actionBuilder._generateNonRecurringEvents(createCal(oneEvent));
 
     assert.deepEqual(actions, expectedActions);
   });
@@ -112,7 +146,7 @@ describe('CalendarActionBuilder with offset', () => {
     ];
 
     const actionBuilder = new CalendarActionBuilder('-15s');
-    const actions = actionBuilder._generateNonRecurringEvents(oneEvent);
+    const actions = actionBuilder._generateNonRecurringEvents(createCal(oneEvent));
 
     assert.deepEqual(actions, expectedActions);
   });
@@ -152,10 +186,10 @@ describe('CalendarActionBuilder with offset', () => {
     }
 
     const actionBuilder = new CalendarActionBuilder('-2d');
-    const actions = actionBuilder._generateRecurringEvents(recurringEvent, moment('20180130'));
+    const actions = actionBuilder._generateRecurringEvents(createCal(recurringEvent), moment('20180130'));
 
     assert.equal(actions.length, 14);
-    assert.deepEqual(actions, expectedActions);
+    assert.deepEqual(actionBuilder._sortEventsByDate(actions), actionBuilder._sortEventsByDate(expectedActions));
   });
 
   it('Moves all recurring events ahead by 2 hours', () => {
@@ -194,10 +228,10 @@ describe('CalendarActionBuilder with offset', () => {
     }
 
     const actionBuilder = new CalendarActionBuilder('-2h');
-    const actions = actionBuilder._generateRecurringEvents(recurringEvent, moment('20180130'));
+    const actions = actionBuilder._generateRecurringEvents(createCal(recurringEvent), moment('20180130'));
 
     assert.equal(actions.length, 14);
-    assert.deepEqual(actions, expectedActions);
+    assert.deepEqual(actionBuilder._sortEventsByDate(actions), actionBuilder._sortEventsByDate(expectedActions));
   });
 
   it('Moves all recurring events ahead by 15 minutes', () => {
@@ -236,10 +270,10 @@ describe('CalendarActionBuilder with offset', () => {
     }
 
     const actionBuilder = new CalendarActionBuilder('15m');
-    const actions = actionBuilder._generateRecurringEvents(recurringEvent, moment('20180130'));
+    const actions = actionBuilder._generateRecurringEvents(createCal(recurringEvent), moment('20180130'));
 
     assert.equal(actions.length, 14);
-    assert.deepEqual(actions, expectedActions);
+    assert.deepEqual(actionBuilder._sortEventsByDate(actions), actionBuilder._sortEventsByDate(expectedActions));
   });
 
   it('Moves all recurring events ahead by 30 seconds', () => {
@@ -277,9 +311,9 @@ describe('CalendarActionBuilder with offset', () => {
     }
 
     const actionBuilder = new CalendarActionBuilder('30s');
-    const actions = actionBuilder._generateRecurringEvents(recurringEvent, moment('20180130'));
+    const actions = actionBuilder._generateRecurringEvents(createCal(recurringEvent), moment('20180130'));
 
     assert.equal(actions.length, 14);
-    assert.deepEqual(actions, expectedActions);
+    assert.deepEqual(actionBuilder._sortEventsByDate(actions), actionBuilder._sortEventsByDate(expectedActions));
   });
 });
