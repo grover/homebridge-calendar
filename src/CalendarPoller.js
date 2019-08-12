@@ -3,6 +3,7 @@
 const EventEmitter = require('events').EventEmitter;
 const IcalExpander = require('ical-expander');
 const https = require('https');
+const zlib = require("zlib");
 
 class CalendarPoller extends EventEmitter {
 
@@ -40,6 +41,11 @@ class CalendarPoller extends EventEmitter {
     this.log(`Updating calendar ${this.name}`);
 
     https.get(this._url, (resp) => {
+
+      if (resp.headers["content-encoding"] === "gzip") {
+        var gunzip = zlib.createGunzip();
+        resp = resp.pipe(gunzip);
+      }
 
       resp.setEncoding('utf8');
       let data = '';
