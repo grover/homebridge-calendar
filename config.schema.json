@@ -12,8 +12,9 @@
         "type": "array",
         "orderable": false,
         "items": [
-                "name": {
-        "title": "Calendar Name",
+          {
+           "name": {
+           "title": "Calendar Name",
         "type": "string",
         "required": true,
         "description": "A unique name for the calendar. Will be used as the accessory name and default switch for any calendar events."
