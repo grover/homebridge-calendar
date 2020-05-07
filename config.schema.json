@@ -7,13 +7,13 @@
     "type": "object",
     "properties": {
       "name": {
-        "title": "Name",
+        "title": "Calendar Name",
         "type": "string",
         "required": true,
         "description": "A unique name for the calendar. Will be used as the accessory name and default switch for any calendar events."
       },
       "url": {
-        "title": "URL",
+        "title": "iCal URL",
         "type": "string",
         "required": true,
         "format":"uri",
@@ -44,7 +44,7 @@
         ],
         "buttonText": "Add Sensor",
         "required": true,
-        "description": "A contact sensor name that will open if the event name starts with the sensor name."
+        "description": "A contact sensor name that will be opened if the event name starts with the sensor name."
       }
     }
   },
