@@ -1,13 +1,18 @@
 {
   "pluginAlias": "Calendar",
   "pluginType": "platform",
-  "singular": false,
+  "singular": true,
   "headerDisplay": "A calendar plugin for homebridge, which allows flexible scheduling of triggers using any iCal calendar.",
   "footerDisplay": "For detailed description of parameters, see: https://github.com/grover/homebridge-calendar",
   "schema": {
     "type": "object",
     "properties": {
-      "name": {
+      "calendars":{
+        "title": "Calendars",
+        "type": "array",
+        "orderable": false,
+        "items": [
+                "name": {
         "title": "Calendar Name",
         "type": "string",
         "required": true,
@@ -47,6 +52,9 @@
         "required": true,
         "description": "A contact sensor name that will be set to open if the calendar event name starts with the sensor name."
       }
+          ]
+      },
+
     }
   },
   "form": null,
