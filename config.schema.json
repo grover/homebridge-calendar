@@ -13,7 +13,7 @@
         "orderable": false,
         "buttonText": "Add a Calendar",
         "required": true,
-        "description": "A calendar configurtion.",
+        "description": "A calendar configuration.",
         "items": {
           "type": "object",
           "properties": {
