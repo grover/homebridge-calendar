@@ -11,16 +11,17 @@
         "title": "Calendars",
         "type": "array",
         "orderable": false,
-        "buttonText": "Add Calendar",
+        "buttonText": "Add a Calendar",
         "required": true,
         "description": "A calendar configurtion.",
-        "items": [
-          {
-             "name": {
-               "title": "Calendar Name",
-               "type": "string",
-               "required": true,
-               "description": "A unique name for the calendar. Will be used as the accessory name and default switch for any calendar events."
+        "items": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "title": "Calendar Name",
+              "type": "string",
+              "required": true,
+              "description": "A unique name for the calendar. Will be used as the accessory name and default switch for any calendar events."
             },
             "url": {
               "title": "iCal URL",
@@ -47,17 +48,15 @@
               "title": "Sensors",
               "type": "array",
               "orderable": false,
-              "buttonText": "Add Contact Sensor",
+              "buttonText": "Add a Contact Sensor",
               "required": true,
               "description": "A contact sensor name that will be set to open if the calendar event name starts with the sensor name.",
-              "items": [
-                {
-                  "type": "string"
-                }
-              ]
+              "items": {
+                "type": "string"
+              }
             }
           }
-        ]
+        }
       }
     }
   }
