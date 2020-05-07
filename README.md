@@ -58,7 +58,7 @@ After [Homebridge](https://github.com/nfarina/homebridge) has been installed:
 |------------|-------|
 | name | A unique name for the calendar. Will be used as the accessory name and default switch for any calendar events. |
 | url | The address of the calender. Can be a `webcal://`, a `http://` or an `https://` URL. |
-| pollingInterval | The polling interval the plugin uses to retrieve calendar updates in minutes. If not set, the plugin will update the calendar ones in 15 minutes. |
+| pollingInterval | The polling interval the plugin uses to retrieve calendar updates in minutes. If not set, the plugin will update the calendar once every 15 minutes. |
 | sensors | An array of event summaries to create special sensors for. |
 
 The above example creates the plugin with three contact sensors:

@@ -1,0 +1,62 @@
+{
+  "pluginAlias": "Calendar",
+  "pluginType": "platform",
+  "singular": true,
+  "headerDisplay": "A calendar plugin for homebridge, which allows flexible scheduling of triggers using any iCal calendar.",
+  "footerDisplay": "For detailed description of parameters, see: https://github.com/grover/homebridge-calendar",
+  "schema": {
+    "type": "object",
+    "properties": {
+      "calendars":{
+        "title": "Calendars",
+        "type": "array",
+        "orderable": false,
+        "required": true,
+        "description": "A calendar configuration.",
+        "items": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "title": "Calendar Name",
+              "type": "string",
+              "required": true,
+              "description": "A unique name for the calendar. Will be used as the accessory name and default switch for any calendar events."
+            },
+            "url": {
+              "title": "iCal URL",
+              "type": "string",
+              "required": true,
+              "pattern":"((https|http|webcal)://)((\\w|-)+)(([.]|[/])((\\w|-)+))+",
+              "description": "The address of the calender. Can be a webcal://, a http:// or an https:// URL."
+            },
+            "pollingInterval": {
+              "title": "Polling Interval",
+              "type": "integer",
+              "required": false,
+              "placeholder":"15",
+              "description": "The polling interval the plugin uses to retrieve calendar updates in minutes. If not set, the plugin will update the calendar once every 15 minutes."
+            },
+            "offset": {
+              "title": "Event start time offset",
+              "type": "string",
+              "required": false,
+              "pattern":"-\\d[d|h|m|s]",
+              "placeholder":"-0s",
+              "description": "Amount of time, in days (-Xd), hours (-Xh), minutes (-Xm), or seconds (-Xs) to trigger the sensors before the scheduled event start time. Must start with a negative (-) and end with one of the four postfixes (d, h, m, s). Examples are: -2d (two days prior), -8h (eight hours prior), -15m (15 minutes prior), and -10s (ten seconds prior)."
+            },
+            "sensors": {
+              "title": "Sensors",
+              "type": "array",
+              "orderable": false,
+              "required": true,
+              "description": "A contact sensor name that will be set to open if the calendar event name starts with the sensor name.",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
