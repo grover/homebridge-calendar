@@ -17,7 +17,7 @@
         "title": "iCal URL",
         "type": "string",
         "required": true,
-        "format":"uri",
+        "pattern":"((https|http|webcal)://)((\\w|-)+)(([.]|[/])((\\w|-)+))+",
         "description": "The address of the calender. Can be a webcal://, a http:// or an https:// URL."
       },
       "pollingInterval": {
@@ -31,7 +31,7 @@
         "title": "Event start time offset",
         "type": "string",
         "required": false,
-        "pattern":"\d[d|h|m|s]",
+        "pattern":"\\d[d|h|m|s]",
         "description": "Amount of time, in days (Xd), hours (Xh), minutes (Xm), or seconds (Xs) to trigger the sensors before the scheduled event start time. Examples are: 2d (two days prior), 8h (eight hours prior), 15m (15 minutes prior), and 10s (ten seconds prior)."
       },
       "sensors": {
