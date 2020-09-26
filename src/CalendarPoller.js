@@ -60,8 +60,9 @@ class CalendarPoller extends EventEmitter {
         this.log(`Failed to load iCal calender: ${this.url} with error ${err}`);
         this.emit('error', err);
       }
-
     });
+
+    this._scheduleNextIteration();
   }
 
   _refreshCalendar(data) {
@@ -80,8 +81,6 @@ class CalendarPoller extends EventEmitter {
     if (cal) {
       this.emit('data', cal);
     }
-
-    this._scheduleNextIteration();
   }
 
   _scheduleNextIteration() {
