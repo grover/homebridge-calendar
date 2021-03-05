@@ -18,6 +18,7 @@ HomeKits own scheduling means are limited and in some instances not flexible eno
 
 - iCloud Calendar
 - Google Calendar
+- Nextcloud Calendar
 
 In theory any calendar solution that supports iCal ([RFC 5545](https://tools.ietf.org/html/rfc5545)) and sharing should work, however some vendors choose to deviate from the RFC in their implementation. If you use one that works, but isn't on the list - great please add it to this README.md.
 
