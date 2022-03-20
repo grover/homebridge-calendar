@@ -1,5 +1,6 @@
 node_modules/
 .vscode/
+.idea/
 tests/config.json
 tests/accessories/
 tests/persist/
