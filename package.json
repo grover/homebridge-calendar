@@ -1,6 +1,6 @@
 {
   "name": "homebridge-calendar",
-  "version": "0.4.10",
+  "version": "0.4.1",
   "description": "A calendar plugin for homebridge (https://github.com/nfarina/homebridge), which allows flexible scheduling of triggers using any iCal calendar.",
   "main": "src/index.js",
   "scripts": {
@@ -35,13 +35,13 @@
   },
   "dependencies": {
     "clone": "^2.1.1",
-    "ical-expander": "^3.1.0",
-    "moment": "^2.29.1",
+    "ical-expander": "^2.0.0",
+    "moment": "^2.22.1",
     "relative-time-parser": "^1.0.9",
     "request": "^2.85.0"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/elvirusDE/homebridge-calendar.git"
+    "url": "git+https://github.com/grover/homebridge-calendar.git"
   }
 }
