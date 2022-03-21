@@ -51,7 +51,12 @@ class CalendarPoller extends EventEmitter {
   
       // The whole response has been received. 
       resp.on('end', () => {
-        this._refreshCalendar(data);
+        if (data !== '') {
+          this._refreshCalendar(data);
+        } else {
+          this.log(`iCal calender data is empty for calendar ${this.name}`);
+          this._scheduleNextIteration();
+        }
       });
   
     }).on('error', (err) => {
