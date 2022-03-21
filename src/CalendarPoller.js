@@ -46,17 +46,16 @@ class CalendarPoller extends EventEmitter {
   
       // A chunk of data has been recieved.
       resp.on('data', (chunk) => {
-        this.log('chunk received');
-        this.log(JSON.stringify(chunk));
         data += chunk;
       });
   
       // The whole response has been received. 
       resp.on('end', () => {
-        this.log('data complete');
-        this.log(JSON.stringify(data));
         if (data !== '') {
           this._refreshCalendar(data);
+        } else {
+          this.log(`iCal calender data is empty for calendar ${this.name}`);
+          this._scheduleNextIteration();
         }
       });
   
