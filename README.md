@@ -1,6 +1,4 @@
-# homebridge-calendar-tempfix
-
-This is a fork of the homebridge-calendar plugin. It is fixing an issue with the original plugin (getting length of undefined error). It will disappear again when the issues are fixed in the original plugin.
+# homebridge-calendar
 
 A calendar plugin for [homebridge](https://github.com/nfarina/homebridge), which allows flexible scheduling of triggers using any iCal calendar.
 
