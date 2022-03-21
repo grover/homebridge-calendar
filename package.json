@@ -1,5 +1,5 @@
 {
-  "name": "homebridge-calendar-elvirus",
+  "name": "homebridge-calendar-tempfix",
   "version": "0.4.4",
   "description": "This is a fork of the homebridge-calendar plugin. A calendar plugin for homebridge (https://github.com/nfarina/homebridge), which allows flexible scheduling of triggers using any iCal calendar.",
   "main": "src/index.js",
