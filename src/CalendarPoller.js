@@ -51,6 +51,8 @@ class CalendarPoller extends EventEmitter {
   
       // The whole response has been received. 
       resp.on('end', () => {
+        this.log('data complete');
+        this.log(JSON.stringify(data));
         this._refreshCalendar(data);
       });
   
