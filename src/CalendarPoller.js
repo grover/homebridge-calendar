@@ -53,7 +53,10 @@ class CalendarPoller extends EventEmitter {
       resp.on('end', () => {
         this.log('data complete');
         this.log(JSON.stringify(data));
-        this._refreshCalendar(data);
+        this.log(this._url);
+        if (data !== '') {
+          this._refreshCalendar(data);
+        }
       });
   
     }).on('error', (err) => {
