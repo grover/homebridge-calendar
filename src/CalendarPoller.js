@@ -46,6 +46,8 @@ class CalendarPoller extends EventEmitter {
   
       // A chunk of data has been recieved.
       resp.on('data', (chunk) => {
+        this.log('chunk received');
+        this.log(JSON.stringify(chunk));
         data += chunk;
       });
   
@@ -53,7 +55,6 @@ class CalendarPoller extends EventEmitter {
       resp.on('end', () => {
         this.log('data complete');
         this.log(JSON.stringify(data));
-        this.log(this._url);
         if (data !== '') {
           this._refreshCalendar(data);
         }
