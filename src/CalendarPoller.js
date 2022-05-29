@@ -3,6 +3,7 @@
 const EventEmitter = require('events').EventEmitter;
 const IcalExpander = require('ical-expander');
 const https = require('https');
+const zlib = require("zlib");
 
 class CalendarPoller extends EventEmitter {
 
@@ -41,6 +42,11 @@ class CalendarPoller extends EventEmitter {
 
     https.get(this._url, (resp) => {
 
+      if (resp.headers["content-encoding"] === "gzip") {
+        var gunzip = zlib.createGunzip();
+        resp = resp.pipe(gunzip);
+      }
+
       resp.setEncoding('utf8');
       let data = '';
   
@@ -51,7 +57,11 @@ class CalendarPoller extends EventEmitter {
   
       // The whole response has been received. 
       resp.on('end', () => {
-        this._refreshCalendar(data);
+        if (resp.statusCode == 200) {
+          this._refreshCalendar(data);
+        } else {
+          this.emit('error', new Error("HTTP Error " + resp.statusCode));
+        }
       });
   
     }).on('error', (err) => {
