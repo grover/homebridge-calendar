@@ -57,7 +57,11 @@ class CalendarPoller extends EventEmitter {
   
       // The whole response has been received. 
       resp.on('end', () => {
-        this._refreshCalendar(data);
+        if (resp.statusCode == 200) {
+          this._refreshCalendar(data);
+        } else {
+          this.emit('error', new Error("HTTP Error " + resp.statusCode));
+        }
       });
   
     }).on('error', (err) => {
